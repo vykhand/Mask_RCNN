@@ -354,9 +354,9 @@ def mask_to_rle(image_id, mask, scores):
         if m.sum() == 0.0:
         	continue
         try:
-		rle = rle_encode(m)
-	except ValueError:
-	    rle = "0 0"
+            rle = rle_encode(m)
+        except ValueError:
+            rle = "0 0"
         lines.append("{}, {}".format(image_id, rle))
     return "\n".join(lines)
 
