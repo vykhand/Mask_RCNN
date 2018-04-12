@@ -345,17 +345,20 @@ def mask_to_rle(image_id, mask, scores):
     # Multiply each instance mask by its score order
     # then take the maximum across the last dimension
     order = np.argsort(scores)[::-1] + 1  # 1-based descending
-    mask = np.max(mask * np.reshape(order, [1, 1, -1]), -1)
+    try:
+        mask = np.max(mask * np.reshape(order, [1, 1, -1]), -1)
+    except ValueError:
+        mask = None
     # Loop over instance masks
     lines = []
     for o in order:
-        m = np.where(mask == o, 1, 0)
-        # Skip if empty
-        if m.sum() == 0.0:
-        	continue
-        try:
+        if mask is not None:
+            m = np.where(mask == o, 1, 0)
+            # Skip if empty
+            if m.sum() == 0.0:
+        	    continue
             rle = rle_encode(m)
-        except ValueError:
+        else:
             rle = "0 0"
         lines.append("{}, {}".format(image_id, rle))
     return "\n".join(lines)
