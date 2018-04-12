@@ -42,6 +42,12 @@ import datetime
 import numpy as np
 import skimage.io
 from imgaug import augmenters as iaa
+import tensorflow as tf
+
+cfg = tf.ConfigProto() 
+cfg.gpu_options.allow_growth = True
+session = tf.Session(config=cfg)
+
 
 # Root directory of the project
 ROOT_DIR = os.path.abspath("../../")
@@ -120,7 +126,7 @@ class NucleusConfig(Config):
 
     # Backbone network architecture
     # Supported values are: resnet50, resnet101
-    BACKBONE = "resnet50"
+    BACKBONE = "resnet101"
 
     # Input image resizing
     # Random crops of size 512x512
@@ -346,8 +352,11 @@ def mask_to_rle(image_id, mask, scores):
         m = np.where(mask == o, 1, 0)
         # Skip if empty
         if m.sum() == 0.0:
-            continue
-        rle = rle_encode(m)
+        	continue
+        try:
+		rle = rle_encode(m)
+	except ValueError:
+	    rle = "0 0"
         lines.append("{}, {}".format(image_id, rle))
     return "\n".join(lines)
 
