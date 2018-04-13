@@ -1725,7 +1725,7 @@ def data_generator(dataset, config, shuffle=True, augment=False, augmentation=No
                 batch_gt_boxes = np.zeros(
                     (batch_size, config.MAX_GT_INSTANCES, 4), dtype=np.int32)
                 batch_gt_masks = np.zeros(
-                    (batch_size, gt_masks.shape[1], gt_masks.shape[1],
+                    (batch_size, gt_masks.shape[0], gt_masks.shape[1],
                      config.MAX_GT_INSTANCES), dtype=gt_masks.dtype)
                 if random_rois:
                     batch_rpn_rois = np.zeros(
@@ -2418,7 +2418,7 @@ class MaskRCNN():
             full_mask = utils.unmold_mask(masks[i], boxes[i], original_image_shape)
             full_masks.append(full_mask)
         full_masks = np.stack(full_masks, axis=-1)\
-            if full_masks else np.empty((0,) + masks.shape[1:3])
+            if full_masks else np.empty(masks.shape[1:3] + (0,))
 
         return boxes, class_ids, scores, full_masks
 
